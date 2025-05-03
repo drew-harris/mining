@@ -6,6 +6,7 @@ local function push()
 	if turtle.detectUp() then
 		turtle.digUp()
 	end
+
 	if turtle.detect() then
 		turtle.dig()
 	end
