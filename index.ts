@@ -65,5 +65,6 @@ Bun.serve({
       return new Response("ok");
     },
   },
+  development: true,
   port: 25565,
 });
