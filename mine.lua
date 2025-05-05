@@ -18,7 +18,7 @@ local function main()
 	turtle.select(1)
 	turtle.refuel()
 
-	local distance = 10
+	local distance = 40
 
 	for i = 1, distance, 1 do
 		push()

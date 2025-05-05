@@ -80,6 +80,11 @@ Bun.serve({
 
       return new Response("ok");
     },
+
+    "/test": async () => {
+      computers.forEach((c) => c.execWithArgs("./args.lua", ["hello"]));
+    },
+
     "/startup": async (req: Request) => {
       const file = Bun.file("./startup.lua");
       const text = await file.text();

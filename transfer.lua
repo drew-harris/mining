@@ -1,1 +1,1 @@
-peripheral.wrap("front")
+local per = peripheral.wrap("front")

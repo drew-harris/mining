@@ -24,4 +24,17 @@ export class Computer {
       }),
     );
   }
+
+  async execWithArgs(path: string, args: any[]) {
+    const file = Bun.file(path);
+    const text = await file.text();
+
+    this.socket.send(
+      JSON.stringify({
+        type: "eval",
+        function: text,
+        args,
+      }),
+    );
+  }
 }
