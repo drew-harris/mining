@@ -1,38 +1,36 @@
----@diagnostic disable: need-check-nil
-local function cPrint(msg)
-	http.post("https://turtle.drewh.net/status", msg)
-end
+local names = peripheral.getNames()
 
-local args = { ... }
+print()
+print()
+print()
+print("listing items")
 
-print("name is" .. args[1])
+local itemReg = {}
 
-cPrint(textutils.serialiseJSON(peripheral.getNames()))
-
-while true do
-	local ws = http.websocket("wss://turtle.drewh.net/ws/" .. args[1])
-
-	ws.send(textutils.serialiseJSON({ type = "opening", name = args[1], isTurtle = turtle ~= nil }))
-
-	if ws == nil then
-		print("no websocket")
-	end
-
-	while true do
-		if ws == nil then
-			return
+for _, name in pairs(names) do
+	-- if name includes minecraft:chest
+	if name:find("minecraft:chest") then
+		local chest = peripheral.wrap(name)
+		if chest == nil then
+			print("chest is nil")
+			break
 		end
 
-		local msg = ws.receive(2)
-		if msg ~= nil then
-			local obj = textutils.unserialiseJSON(msg)
-			if obj.type == "eval" then
-				local func = loadstring(obj["function"])
-				local result = func()
-				ws.send(textutils.serialiseJSON({ data = result }))
-			else
-				print("no")
+		-- report items
+
+		local items = chest.list()
+		for _, item in pairs(items) do
+			if item.count ~= 0 then
+				table.insert(itemReg, {
+					chest = name,
+					count = item.count,
+					name = item.name,
+				})
 			end
 		end
 	end
 end
+
+print(#itemReg)
+
+http.post("https://turtle.drewh.net/scan", textutils.serialiseJSON(itemReg))
