@@ -1,5 +1,5 @@
 local function reportFuel()
-	http.post("https://turtle.drewh.net/status", "Fuel level: " .. turtle.getFuelLevel())
+	http.post("https://turtle.drewh.net/log", "Fuel level: " .. turtle.getFuelLevel())
 end
 
 local function push()

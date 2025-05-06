@@ -6,7 +6,7 @@ export class Computer {
   constructor(
     isTurtle: boolean,
     socket: Bun.ServerWebSocket<unknown>,
-    name: string,
+    name: string
   ) {
     this.isTurtle = isTurtle;
     this.socket = socket;
@@ -21,7 +21,7 @@ export class Computer {
       JSON.stringify({
         type: "eval",
         function: text,
-      }),
+      })
     );
   }
 
@@ -34,7 +34,7 @@ export class Computer {
         type: "eval",
         function: text,
         args,
-      }),
+      })
     );
   }
 }

@@ -1,6 +1,7 @@
 import { Computer } from "./computer";
-
-console.log("Hello via Bun!");
+import indexHtml from "./public/index.html";
+import { readdir } from "fs/promises";
+import { join } from "path";
 
 type PossibleMessage =
   | {
@@ -17,14 +18,6 @@ const computers: Computer[] = [];
 
 Bun.serve({
   websocket: {
-    open(w) {
-      // w.sendText(
-      //   JSON.stringify({
-      //     type: "eval",
-      //     function: 'return print("hello")',
-      //   }),
-      // );
-    },
     async message(ws, message) {
       if (typeof message != "string") {
         throw new Error("Non String message passed");
@@ -35,7 +28,7 @@ Bun.serve({
         const computer = new Computer(
           parsedMessage.isTurtle,
           ws,
-          parsedMessage.name,
+          parsedMessage.name
         );
         computers.push(computer);
         console.log("Registered computer: ", parsedMessage.name);
@@ -51,18 +44,31 @@ Bun.serve({
     },
   },
   routes: {
-    "/": async (req: Request) => {
-      const file = Bun.file("./mine.lua");
-      const text = await file.text();
-      return new Response(text);
-    },
+    "/": indexHtml,
     "/robots": async (req: Request) => {
       return new Response(
         JSON.stringify({
           count: computers.length,
           bots: computers.map((c) => c.name),
-        }),
+        })
       );
+    },
+    "/api/active-bots": {
+      GET: () => {
+        return Response.json({ count: computers.length });
+      },
+    },
+    "/api/lua-files": {
+      GET: async () => {
+        try {
+          const files = await readdir(".");
+          const luaFiles = files.filter((file) => file.endsWith(".lua"));
+          return Response.json({ files: luaFiles });
+        } catch (error) {
+          console.error("Error reading Lua files:", error);
+          return Response.json({ files: [] }, { status: 500 });
+        }
+      },
     },
     "/exec/:name/:file": async (req) => {
       const name = req.params.name;
@@ -100,9 +106,9 @@ Bun.serve({
         return; // do not return a Response
       }
     },
-    "/status": async (req: Request) => {
+    "/log": async (req: Request) => {
       console.log(
-        new Date().toLocaleTimeString() + "  -  " + (await req.text()),
+        new Date().toLocaleTimeString() + "  -  " + (await req.text())
       );
       return new Response("ok");
     },
@@ -116,3 +122,5 @@ Bun.serve({
   development: true,
   port: 25565,
 });
+
+console.log("Server started on port 25565");
