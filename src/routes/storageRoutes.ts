@@ -169,4 +169,76 @@ export const storageRoutes = {
       }
     },
   },
+  "/api/bom/consolidate": {
+    POST: async (req: Request) => {
+      try {
+        const { items } = (await req.json()) as {
+          items: { name: string; amount: number }[];
+        };
+
+        if (!items || !Array.isArray(items)) {
+          return Response.json(
+            { error: "Invalid items format" },
+            { status: 400 }
+          );
+        }
+
+        // Get storage computers
+        const storageComputers = computers.filter((c) =>
+          c.name.toLowerCase().includes("storage")
+        );
+
+        if (storageComputers.length === 0) {
+          return Response.json(
+            { error: "No storage computers found" },
+            { status: 404 }
+          );
+        }
+
+        // Execute consolidate.lua for each item on all storage computers
+        const results = await Promise.all(
+          items.map(async ({ name, amount }) => {
+            const itemResults = await Promise.all(
+              storageComputers.map(async (computer) => {
+                try {
+                  const args = [name, amount.toString()];
+                  await computer.execWithArgs("consolidate.lua", args);
+                  return {
+                    computer: computer.name,
+                    status: "success",
+                  };
+                } catch (error) {
+                  return {
+                    computer: computer.name,
+                    status: "error",
+                    message:
+                      error instanceof Error ? error.message : "Unknown error",
+                  };
+                }
+              })
+            );
+
+            return {
+              item: name,
+              amount,
+              results: itemResults,
+            };
+          })
+        );
+
+        return Response.json({
+          message: "BOM consolidation initiated",
+          results,
+        });
+      } catch (error) {
+        console.error("Error consolidating BOM:", error);
+        return Response.json(
+          {
+            error: "Failed to consolidate BOM",
+          },
+          { status: 500 }
+        );
+      }
+    },
+  },
 };
