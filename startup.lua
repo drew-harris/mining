@@ -35,6 +35,9 @@ while true do
 					break
 				end
 				local args = obj["args"]
+				if args == nil then
+					args = {}
+				end
 				local ok, result = pcall(func, unpack(args))
 				if not ok then
 					break
