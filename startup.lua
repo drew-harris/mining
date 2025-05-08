@@ -14,6 +14,47 @@ cPrint(textutils.serialiseJSON(peripheral.getNames()))
 -- Queue to store pending evaluations
 local evalQueue = {}
 
+local function suckItems()
+	local names = peripheral.getNames()
+	
+	-- Find the barrel
+	local barrelName = nil
+	for _, name in pairs(names) do
+		if peripheral.getType(name) == "barrel" or (name:find("minecraft:barrel")) then
+			if barrelName then
+				print("Error: More than one barrel found on the network!")
+				return
+			end
+			barrelName = name
+		end
+	end
+
+	if not barrelName then
+		print("Error: No barrel found on the network!")
+		return
+	end
+
+	local barrel = peripheral.wrap(barrelName)
+	local items = barrel.list()
+	
+	-- For each item in the barrel
+	for slot, item in pairs(items) do
+		-- Try to move it to any available chest
+		for _, name in pairs(names) do
+			if (peripheral.getType(name) == "chest" or name:find("minecraft:chest")) and name ~= barrelName then
+				local chest = peripheral.wrap(name)
+				if chest then
+					local moved = barrel.pushItems(name, slot)
+					if moved > 0 then
+						print("Moved " .. moved .. " " .. item.name .. " to " .. name)
+						break
+					end
+				end
+			end
+		end
+	end
+end
+
 -- Function to handle a single evaluation
 local function handleEval(ws, obj)
 	local func = loadstring(obj["function"])
@@ -65,18 +106,34 @@ local function runWebsocketReceiver(ws)
 	end
 end
 
+-- Function to handle redstone events
+local function runRedstoneMonitor()
+	while true do
+		os.pullEvent("redstone")
+		if redstone.getInput("top") then  -- Change "top" to match your button's side
+			cPrint("Button pressed!")
+			print("Button pressed!")
+			-- Add your button press logic here
+			suckItems()
+		end
+	end
+end
+
 -- Main loop
 while true do
 	local ws = http.websocket("wss://turtle.drewh.net/ws/" .. name)
 	ws.send(textutils.serialiseJSON({ type = "opening", name = name, isTurtle = turtle ~= nil }))
-	
-	-- Run the websocket receiver and queue processor in parallel
+
+	-- Run the websocket receiver, queue processor, and redstone monitor in parallel
 	parallel.waitForAny(
 		function()
 			runWebsocketReceiver(ws)
 		end,
 		function()
 			processEvalQueue(ws)
+		end,
+		function()
+			runRedstoneMonitor()
 		end
 	)
 end

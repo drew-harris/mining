@@ -54,7 +54,7 @@ export function LuaExecutor() {
     setSelectedBots((prev) =>
       prev.includes(botName)
         ? prev.filter((name) => name !== botName)
-        : [...prev, botName]
+        : [...prev, botName],
     );
   };
 

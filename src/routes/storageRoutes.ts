@@ -12,7 +12,7 @@ export const storageRoutes = {
     if (!parsed.computer) {
       return Response.json(
         { error: "Computer name not provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,7 +31,7 @@ export const storageRoutes = {
       try {
         // Filter computers that have "storage" in their name
         const storageComputers = computers.filter((c) =>
-          c.name.toLowerCase().includes("storage")
+          c.name.toLowerCase().includes("storage"),
         );
 
         if (storageComputers.length === 0) {
@@ -39,7 +39,7 @@ export const storageRoutes = {
             {
               error: "No storage computers found",
             },
-            { status: 404 }
+            { status: 404 },
           );
         }
 
@@ -60,7 +60,7 @@ export const storageRoutes = {
                   error instanceof Error ? error.message : "Unknown error",
               };
             }
-          })
+          }),
         );
 
         return Response.json({
@@ -73,7 +73,7 @@ export const storageRoutes = {
           {
             error: "Failed to scan storage computers",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
@@ -86,7 +86,7 @@ export const storageRoutes = {
         if (!itemName) {
           return Response.json(
             { error: "Item name is required" },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -99,7 +99,7 @@ export const storageRoutes = {
         if (targetComputers.length === 0) {
           return Response.json(
             { error: "No matching computers found" },
-            { status: 404 }
+            { status: 404 },
           );
         }
 
@@ -121,7 +121,7 @@ export const storageRoutes = {
                   error instanceof Error ? error.message : "Unknown error",
               };
             }
-          })
+          }),
         );
 
         return Response.json({
@@ -136,7 +136,7 @@ export const storageRoutes = {
           {
             error: "Failed to consolidate items",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
@@ -146,7 +146,7 @@ export const storageRoutes = {
       try {
         // Get all storage computers
         const storageComputers = computers.filter((c) =>
-          c.name.toLowerCase().includes("storage")
+          c.name.toLowerCase().includes("storage"),
         );
 
         // Get inventory data for each storage computer
@@ -164,7 +164,7 @@ export const storageRoutes = {
           {
             error: "Failed to get storage inventory",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },
@@ -179,19 +179,19 @@ export const storageRoutes = {
         if (!items || !Array.isArray(items)) {
           return Response.json(
             { error: "Invalid items format" },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
         // Get storage computers
         const storageComputers = computers.filter((c) =>
-          c.name.toLowerCase().includes("storage")
+          c.name.toLowerCase().includes("storage"),
         );
 
         if (storageComputers.length === 0) {
           return Response.json(
             { error: "No storage computers found" },
-            { status: 404 }
+            { status: 404 },
           );
         }
 
@@ -215,7 +215,7 @@ export const storageRoutes = {
                       error instanceof Error ? error.message : "Unknown error",
                   };
                 }
-              })
+              }),
             );
 
             return {
@@ -223,7 +223,7 @@ export const storageRoutes = {
               amount,
               results: itemResults,
             };
-          })
+          }),
         );
 
         return Response.json({
@@ -236,7 +236,7 @@ export const storageRoutes = {
           {
             error: "Failed to consolidate BOM",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     },

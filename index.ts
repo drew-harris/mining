@@ -19,7 +19,7 @@ Bun.serve({
         const computer = new Computer(
           parsedMessage.isTurtle,
           ws,
-          parsedMessage.name
+          parsedMessage.name,
         );
         computers.push(computer);
         console.log("Registered computer: ", parsedMessage.name);
@@ -41,6 +41,8 @@ Bun.serve({
     ...storageRoutes,
     ...fileRoutes,
     ...wsRoutes,
+    "/bom": indexHtml,
+    "/storage": indexHtml,
   },
   development: true,
   port: 25565,

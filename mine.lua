@@ -44,7 +44,7 @@ local function main()
 end
 
 main()
--- turtle.turnRight()
+
 -- push()
 -- turtle.turnRight()
 -- main()
