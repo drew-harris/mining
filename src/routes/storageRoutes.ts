@@ -81,7 +81,7 @@ export const storageRoutes = {
   "/api/consolidate-items": {
     POST: async (req: Request) => {
       try {
-        const { itemName, computerName } = await req.json();
+        const { itemName, computerName, amount } = await req.json();
 
         if (!itemName) {
           return Response.json(
@@ -107,7 +107,8 @@ export const storageRoutes = {
         const results = await Promise.all(
           targetComputers.map(async (computer) => {
             try {
-              await computer.execWithArgs("consolidate.lua", [itemName]);
+              const args = amount ? [itemName, amount.toString()] : [itemName];
+              await computer.execWithArgs("consolidate.lua", args);
               return {
                 computer: computer.name,
                 status: "success",
@@ -124,7 +125,9 @@ export const storageRoutes = {
         );
 
         return Response.json({
-          message: `Consolidation initiated for ${itemName}`,
+          message: `Consolidation initiated for ${itemName}${
+            amount ? ` (amount: ${amount})` : ""
+          }`,
           results,
         });
       } catch (error) {
