@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { LuaExecutor } from "./components/LuaExecutor";
+import { StorageManagement } from "./components/StorageManagement";
 import { useState } from "react";
 
 interface ActiveBotsResponse {
@@ -75,6 +76,7 @@ export function App() {
           </div>
         </div>
 
+        <StorageManagement />
         <LuaExecutor />
       </div>
     </div>

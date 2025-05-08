@@ -33,4 +33,14 @@ end
 
 print(#itemReg)
 
-http.post("https://turtle.drewh.net/scan", textutils.serialiseJSON(itemReg))
+-- Get the computer name and include it in the request
+local file = fs.open("computer.txt", "r")
+local computerName = file.readAll()
+file.close()
+
+local requestData = {
+    computer = computerName,
+    items = itemReg
+}
+
+http.post("https://turtle.drewh.net/scan", textutils.serialiseJSON(requestData))
