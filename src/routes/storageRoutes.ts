@@ -78,6 +78,66 @@ export const storageRoutes = {
       }
     },
   },
+  "/api/consolidate-items": {
+    POST: async (req: Request) => {
+      try {
+        const { itemName, computerName } = await req.json();
+
+        if (!itemName) {
+          return Response.json(
+            { error: "Item name is required" },
+            { status: 400 }
+          );
+        }
+
+        // If computerName is provided, only consolidate on that computer
+        // Otherwise, consolidate on all storage computers
+        const targetComputers = computerName
+          ? computers.filter((c) => c.name === computerName)
+          : computers.filter((c) => c.name.toLowerCase().includes("storage"));
+
+        if (targetComputers.length === 0) {
+          return Response.json(
+            { error: "No matching computers found" },
+            { status: 404 }
+          );
+        }
+
+        // Execute consolidate.lua on target computers
+        const results = await Promise.all(
+          targetComputers.map(async (computer) => {
+            try {
+              await computer.execWithArgs("consolidate.lua", [itemName]);
+              return {
+                computer: computer.name,
+                status: "success",
+              };
+            } catch (error) {
+              return {
+                computer: computer.name,
+                status: "error",
+                message:
+                  error instanceof Error ? error.message : "Unknown error",
+              };
+            }
+          })
+        );
+
+        return Response.json({
+          message: `Consolidation initiated for ${itemName}`,
+          results,
+        });
+      } catch (error) {
+        console.error("Error consolidating items:", error);
+        return Response.json(
+          {
+            error: "Failed to consolidate items",
+          },
+          { status: 500 }
+        );
+      }
+    },
+  },
   "/api/storage-inventory": {
     GET: (): Response => {
       try {

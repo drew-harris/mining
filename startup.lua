@@ -35,7 +35,6 @@ while true do
 					break
 				end
 				local funcArgs = obj["args"]
-				print("Args: " .. textutils.serialiseJSON(funcArgs))
 				if funcArgs == nil then
 					funcArgs = {}
 				end

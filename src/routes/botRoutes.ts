@@ -1,3 +1,5 @@
+import type { BunRequest } from "bun";
+
 import { computers } from "../state";
 
 export const botRoutes = {
@@ -14,9 +16,15 @@ export const botRoutes = {
       return Response.json({ count: computers.length });
     },
   },
-  "/exec/:name/:file": async (req) => {
-    const name = req.params.name;
-    const file = req.params.file;
+  "/exec/:name/:file": async (req: BunRequest) => {
+    const url = new URL(req.url);
+    const name = url.pathname.split("/")[2];
+    const file = url.pathname.split("/")[3];
+
+    if (name === undefined || file === undefined) {
+      return new Response("Invalid request", { status: 400 });
+    }
+
     let active = [];
     if (name === "all") {
       active = computers;
