@@ -22,7 +22,6 @@ local function main()
 
 	for i = 1, distance, 1 do
 		push()
-
 		-- report fuel every 5 blocks
 		if i % 5 == 0 then
 			reportFuel()

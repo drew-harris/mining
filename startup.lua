@@ -34,11 +34,12 @@ while true do
 				if func == nil then
 					break
 				end
-				local args = obj["args"]
-				if args == nil then
-					args = {}
+				local funcArgs = obj["args"]
+				print("Args: " .. textutils.serialiseJSON(funcArgs))
+				if funcArgs == nil then
+					funcArgs = {}
 				end
-				local ok, result = pcall(func, unpack(args))
+				local ok, result = pcall(func, unpack(funcArgs))
 				if not ok then
 					break
 				end

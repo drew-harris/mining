@@ -25,7 +25,7 @@ export class Computer {
     );
   }
 
-  async execWithArgs(path: string, args: any[]) {
+  async execWithArgs(path: string, args?: any[]) {
     const file = Bun.file(path);
     const text = await file.text();
 
@@ -33,7 +33,7 @@ export class Computer {
       JSON.stringify({
         type: "eval",
         function: text,
-        args,
+        args: args ?? [],
       })
     );
   }

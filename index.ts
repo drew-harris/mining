@@ -39,7 +39,8 @@ Bun.serve({
     close(ws, code, reason) {
       const index = computers.findIndex((c) => c.socket === ws);
       if (index !== -1) {
-        computers.splice(index, 1);
+        const removedComputer = computers.splice(index, 1)[0] as Computer;
+        console.log(`Computer disconnected: ${removedComputer.name}`);
       }
     },
   },
